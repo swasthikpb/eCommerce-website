@@ -1,89 +1,102 @@
-import React,{useState,useEffect} from 'react';
-import { Link ,useParams} from 'react-router-dom'
-import {Row,Col,Image,ListGroup,Card, ListGroupItem} from 'react-bootstrap'
-import Rating from '../components/Rating'
-import products from '../products'
-import axios from 'axios'
+import React, { useState, useEffect } from "react";
+import { Link, useParams } from "react-router-dom";
+import { Row, Col, Image, ListGroup, Card, Button } from "react-bootstrap";
+import { FaShoppingCart } from "react-icons/fa";
+import Rating from "../components/Rating";
+import axios from "axios";
 
+const ProductScreen = () => {
+  const { ids } = useParams();
+  const [product, setProduct] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-const ProductScreen = ({match}) => {
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        setLoading(true);
+        const { data } = await axios.get(`/api/products/${ids}/`);
+        setProduct(data);
+        setLoading(false);
+      } catch (err) {
+        setError("Product not found");
+        setLoading(false);
+      }
+    };
+    fetchProduct();
+  }, [ids]);
 
-  const [product,setProducts]=useState([])
+  if (loading) return <h2>Loading...</h2>;
+  if (error) return <h2>{error}</h2>;
 
-  useEffect(()=>{
-  
-    async function fetchProducts(){
-        const {data} = await axios.get(`/api/products/ ${match.params.id}`)
-        setProducts(data)
-        console.log(data,"data++++++++++++")
-    }
-    fetchProducts()
-  },[])
   return (
-    <div>
-      <Link to='/' className='btn btn-dark my-3'>Go Back</Link>
-       <Row>
-        <Col md={5} >
-          <Image src={product.image} alt={product.name}></Image>
+    <div className="container">
+      <Link to="/" className="btn btn-dark my-3">
+        Go Back
+      </Link>
+      <Row>
+        <Col md={6} xs={12} className="mb-3">
+          <Image
+            src={product.image}
+            alt={product.name}
+            className="product-image"
+            fluid
+          />
         </Col>
 
-
-        <Col md={3}>
-          <ListGroup variant=''>
-            <ListGroupItem>
+        <Col md={3} xs={12} className="product-details">
+          <ListGroup variant="flush">
+            <ListGroup.Item>
               <h3>{product.name}</h3>
-            </ListGroupItem>
-
-            <ListGroupItem>
-              <Rating value={product.rating} text={`${product.numReviews} rating`} color={'#f8e825'} />
-            </ListGroupItem>
-
-            <ListGroupItem>
-              Price:${product.price}
-            </ListGroupItem>
-
-            <ListGroupItem>
-              Description:{product.description}
-            </ListGroupItem>
-
+            </ListGroup.Item>
+            <ListGroup.Item>
+              <Rating
+                value={product.rating}
+                text={`${product.numReviews} ratings`}
+                color="#f8e825"
+              />
+            </ListGroup.Item>
+            <ListGroup.Item>
+              <strong>Price: ${product.price}</strong>
+            </ListGroup.Item>
+            <ListGroup.Item>Description: {product.description}</ListGroup.Item>
           </ListGroup>
         </Col>
 
-        <Col md={3}>
+        <Col md={3} xs={12}>
           <Card>
-            <ListGroup variant='flush'>
-              <ListGroupItem>
+            <ListGroup variant="flush">
+              <ListGroup.Item>
                 <Row>
                   <Col>Price:</Col>
-                  <Col> 
+                  <Col>
                     <strong>${product.price}</strong>
                   </Col>
                 </Row>
-              </ListGroupItem>
-
-              <ListGroupItem>
+              </ListGroup.Item>
+              <ListGroup.Item>
                 <Row>
-                  <Col>Stock:</Col>
-                  <Col> 
-                    {product.countInStock > 0 ? `In Stock` : `Out of Stock`}
+                  <Col>Status:</Col>
+                  <Col>
+                    {product.countInStock > 0 ? "In Stock" : "Out of Stock"}
                   </Col>
                 </Row>
-              </ListGroupItem>
-
-              <ListGroupItem>
-                <button className='btn btn-dark'disabled={product.countInStock===0}type='button'> Add To Cart</button>
-            </ListGroupItem>
-
+              </ListGroup.Item>
+              <ListGroup.Item>
+                <Button
+                  className="btn btn-dark w-100 d-flex align-items-center justify-content-center"
+                  disabled={product.countInStock === 0}
+                  type="button"
+                >
+                  <FaShoppingCart className="me-2" /> Add To Cart
+                </Button>
+              </ListGroup.Item>
             </ListGroup>
           </Card>
-        
         </Col>
-
-
-
-       </Row>
+      </Row>
     </div>
-  )
-}
+  );
+};
 
-export default ProductScreen
+export default ProductScreen;
