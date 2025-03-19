@@ -1,0 +1,11 @@
+# Virtual environment directories
+venv/
+.venv/
+env/
+.env/
+myenv/
+.myenv/
+
+# Conda environments
+.conda/
+envs/
