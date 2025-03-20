@@ -10,7 +10,7 @@ import Message from "../components/Message";
 function HomeScreen() {
   const dispatch = useDispatch();
   const productList = useSelector((state) => state.productList);
-  const { error, loading, products } = productList;
+  const { error, loading, products = [] } = productList;
 
   useEffect(() => {
     dispatch(listProduct());
@@ -24,15 +24,8 @@ function HomeScreen() {
       ) : error ? (
         <Message variant="danger">{error}</Message>
       ) : (
-        // <Row>
-        //   {products.map((useProduct) => (
-        //     <Col key={useProduct._id} sm={12} md={6} lg={4} xl={3}>
-        //       <Product product={useProduct} />
-        //     </Col>
-        //   ))}
-        // </Row>
         <Row>
-          {products.map((useProduct) => (
+          {products && products.map((useProduct) => (
             <Col
               key={useProduct._id}
               sm={12}
