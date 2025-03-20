@@ -5,6 +5,7 @@ import { FaShoppingCart } from "react-icons/fa";
 import Rating from "../components/Rating";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
+import QuantitySelector from "../components/QuantitySelector";
 import axios from "axios";
 
 const ProductScreen = () => {
@@ -12,6 +13,7 @@ const ProductScreen = () => {
   const [product, setProduct] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [quantity, setQuantity] = useState(1);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -88,6 +90,41 @@ const ProductScreen = () => {
                     </Col>
                   </Row>
                 </ListGroup.Item>
+                {product.countInStock > 0 && (
+                  <ListGroup.Item>
+                    <Row className="align-items-center">
+                      <Col>Quantity:</Col>
+                      <Col>
+                        <QuantitySelector
+                          quantity={quantity}
+                          setQuantity={setQuantity}
+                          countInStock={product.countInStock}
+                        />
+                      </Col>
+                    </Row>
+                  </ListGroup.Item>
+                )}
+                <ListGroup.Item>
+                  <Button
+                    className="btn btn-dark w-100 d-flex align-items-center justify-content-center"
+                    disabled={product.countInStock === 0}
+                    onClick={() => {
+                      if (quantity > product.countInStock) {
+                        alert(
+                          `You cannot purchase more than ${product.countInStock} items`
+                        );
+                      } else {
+                        console.log(
+                          `Adding ${quantity} of ${product.name} to cart`
+                        );
+                      }
+                    }}
+                    type="button"
+                  >
+                    <FaShoppingCart className="me-2" /> Add To Cart
+                  </Button>
+                </ListGroup.Item>
+
                 <ListGroup.Item>
                   <Button
                     className="btn btn-dark w-100 d-flex align-items-center justify-content-center"
