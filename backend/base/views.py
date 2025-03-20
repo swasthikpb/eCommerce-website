@@ -30,10 +30,12 @@ def getRoutes(request):
 
 @api_view(['GET'])
 def getProducts(request):
-    
-    products = Product.objects.all()
-    serializer = ProductSerializer(products, many= True)
-    return Response(serializer.data)
+    try:
+        products = Product.objects.all()
+        serializer = ProductSerializer(products, many= True)
+        return Response(serializer.data)
+    except Product.DoesNotExist:
+            return Response({'detail': 'Product not found'}, status=404)
 
 @api_view(['GET'])
 def getProduct_by_id(request, pk):
