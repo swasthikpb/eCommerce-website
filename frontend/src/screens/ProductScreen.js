@@ -1,11 +1,19 @@
 import React, { useState, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
-import { Row, Col, Image, ListGroup, Card, Button } from "react-bootstrap";
+import { Link, useParams, useNavigate } from "react-router-dom";
+import {
+  Row,
+  Col,
+  Image,
+  ListGroup,
+  Card,
+  Button,
+} from "react-bootstrap";
 import { FaShoppingCart } from "react-icons/fa";
 import Rating from "../components/Rating";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
 import QuantitySelector from "../components/QuantitySelector";
+import { addToCartHandler } from "../handlers/cartHandler";
 import axios from "axios";
 
 const ProductScreen = () => {
@@ -14,12 +22,14 @@ const ProductScreen = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [quantity, setQuantity] = useState(1);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProduct = async () => {
       try {
         setLoading(true);
         const { data } = await axios.get(`/api/products/${ids}/`);
+        console.log("Fetched Product Data:", data);
         setProduct(data);
         setLoading(false);
       } catch (err) {
@@ -114,21 +124,12 @@ const ProductScreen = () => {
                           `You cannot purchase more than ${product.countInStock} items`
                         );
                       } else {
+                        addToCartHandler(product, quantity, navigate); // Call the handler with correct params
                         console.log(
                           `Adding ${quantity} of ${product.name} to cart`
                         );
                       }
                     }}
-                    type="button"
-                  >
-                    <FaShoppingCart className="me-2" /> Add To Cart
-                  </Button>
-                </ListGroup.Item>
-
-                <ListGroup.Item>
-                  <Button
-                    className="btn btn-dark w-100 d-flex align-items-center justify-content-center"
-                    disabled={product.countInStock === 0}
                     type="button"
                   >
                     <FaShoppingCart className="me-2" /> Add To Cart
